@@ -1,0 +1,271 @@
+// RankLift — SEO & GEO toolkit for Shopify.
+//
+// Shop.settings holds everything the settings pages edit (meta templates,
+// schema toggles, speed options) as JSON, so a new option never needs a
+// migration. Anything the server filters or sorts on is a real column.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Session {
+  id                  String    @id
+  shop                String
+  state               String
+  isOnline            Boolean   @default(false)
+  scope               String?
+  expires             DateTime?
+  accessToken         String
+  userId              BigInt?
+  firstName           String?
+  lastName            String?
+  email               String?
+  accountOwner        Boolean   @default(false)
+  locale              String?
+  collaborator        Boolean?  @default(false)
+  emailVerified       Boolean?  @default(false)
+  refreshToken        String?
+  refreshTokenExpires DateTime?
+}
+
+enum Plan {
+  FREE
+  PRO
+  PREMIUM
+}
+
+model Shop {
+  id            String    @id @default(cuid())
+  domain        String    @unique
+  name          String?
+  email         String?
+  primaryUrl    String?
+  currencyCode  String?
+  timezone      String?
+  devStore      Boolean   @default(false)
+  plan          Plan      @default(FREE)
+  // Start of the current 30-day usage period; usage resets when it rolls over.
+  periodStart   DateTime  @default(now())
+  // Charges past the plan's included usage. Off unless the merchant turns it on.
+  overage       Boolean   @default(false)
+  settings      Json      @default("{}")
+  installedAt   DateTime  @default(now())
+  uninstalledAt DateTime?
+
+  jobs      Job[]
+  audits    Audit[]
+  usage     Usage[]
+  links     Link[]
+  notFound  NotFound[]
+  images    ImageBackup[]
+  articles  ArticleDraft[]
+  keywords  Keyword[]
+  competitors Competitor[]
+  visibility  VisibilityCheck[]
+}
+
+enum JobStatus {
+  QUEUED
+  RUNNING
+  DONE
+  FAILED
+  CANCELLED
+}
+
+/// Background work: crawls, bulk edits, AI batches, image compression.
+model Job {
+  id         String    @id @default(cuid())
+  shopId     String
+  shop       Shop      @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  type       String
+  status     JobStatus @default(QUEUED)
+  payload    Json      @default("{}")
+  result     Json?
+  error      String?
+  progress   Int       @default(0)
+  total      Int       @default(0)
+  attempts   Int       @default(0)
+  runAfter   DateTime  @default(now())
+  lockedAt   DateTime?
+  createdAt  DateTime  @default(now())
+  startedAt  DateTime?
+  finishedAt DateTime?
+
+  @@index([status, runAfter])
+  @@index([shopId, type, createdAt])
+}
+
+/// Metered usage (AI credits, image compressions, audit pages) per period.
+model Usage {
+  id        String   @id @default(cuid())
+  shopId    String
+  shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  meter     String
+  amount    Int
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@index([shopId, meter, createdAt])
+}
+
+model Audit {
+  id         String      @id @default(cuid())
+  shopId     String
+  shop       Shop        @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  jobId      String?
+  score      Int?
+  pages      Int         @default(0)
+  // Issue counts by rule id, e.g. {"title_long": 12}.
+  summary    Json        @default("{}")
+  createdAt  DateTime    @default(now())
+  finishedAt DateTime?
+  results    AuditPage[]
+
+  @@index([shopId, createdAt])
+}
+
+model AuditPage {
+  id           String  @id @default(cuid())
+  auditId      String
+  audit        Audit   @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  url          String
+  // product | collection | page | article | home | blog
+  resourceType String
+  resourceId   String?
+  status       Int
+  title        String?
+  description  String?
+  score        Int
+  // [{rule, severity, detail}]
+  issues       Json    @default("[]")
+
+  @@index([auditId, score])
+}
+
+/// A link found by the link checker, internal or external.
+model Link {
+  id         String   @id @default(cuid())
+  shopId     String
+  shop       Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  url        String
+  sourceUrl  String
+  status     Int
+  checkedAt  DateTime @default(now())
+  fixed      Boolean  @default(false)
+
+  @@unique([shopId, url, sourceUrl])
+  @@index([shopId, status])
+}
+
+/// 404s reported by the storefront embed.
+model NotFound {
+  id         String   @id @default(cuid())
+  shopId     String
+  shop       Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  path       String
+  referrer   String?
+  hits       Int      @default(1)
+  firstSeen  DateTime @default(now())
+  lastSeen   DateTime @default(now())
+  redirectTo String?
+
+  @@unique([shopId, path])
+  @@index([shopId, lastSeen])
+}
+
+/// The original of every image RankLift compressed, so it can be restored.
+model ImageBackup {
+  id          String   @id @default(cuid())
+  shopId      String
+  shop        Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  productId   String
+  mediaId     String
+  newMediaId  String?
+  originalUrl String
+  position    Int      @default(0)
+  alt         String?
+  bytesBefore Int
+  bytesAfter  Int?
+  status      String   @default("compressed")
+  createdAt   DateTime @default(now())
+
+  @@index([shopId, productId])
+}
+
+model ArticleDraft {
+  id         String   @id @default(cuid())
+  shopId     String
+  shop       Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  keyword    String
+  title      String
+  outline    Json?
+  bodyHtml   String?
+  language   String   @default("en")
+  // idea | writing | draft | published | failed
+  status     String   @default("idea")
+  blogId     String?
+  articleId  String?
+  publishAt  DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([shopId, status])
+}
+
+model Keyword {
+  id         String        @id @default(cuid())
+  shopId     String
+  shop       Shop          @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  keyword    String
+  location   String        @default("us")
+  volume     Int?
+  difficulty Int?
+  intent     String?
+  tracked    Boolean       @default(false)
+  targetUrl  String?
+  createdAt  DateTime      @default(now())
+  ranks      RankSnapshot[]
+
+  @@unique([shopId, keyword, location])
+}
+
+model RankSnapshot {
+  id        String   @id @default(cuid())
+  keywordId String
+  keyword   Keyword  @relation(fields: [keywordId], references: [id], onDelete: Cascade)
+  position  Int?
+  url       String?
+  checkedAt DateTime @default(now())
+
+  @@index([keywordId, checkedAt])
+}
+
+model Competitor {
+  id         String   @id @default(cuid())
+  shopId     String
+  shop       Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  domain     String
+  analysis   Json?
+  analyzedAt DateTime?
+
+  @@unique([shopId, domain])
+}
+
+/// "Does an AI assistant mention this store?" — one prompt, one answer.
+model VisibilityCheck {
+  id        String   @id @default(cuid())
+  shopId    String
+  shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  prompt    String
+  engine    String
+  mentioned Boolean
+  answer    String
+  createdAt DateTime @default(now())
+
+  @@index([shopId, createdAt])
+}

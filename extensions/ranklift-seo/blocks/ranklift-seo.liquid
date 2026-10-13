@@ -1,0 +1,34 @@
+{%- comment -%}
+  RankLift app embed (head). Everything it does is driven by the app-data
+  metafield app.metafields.ranklift.config, written by the RankLift admin, so
+  settings change without theme edits and nothing stays behind on uninstall.
+
+  Outputs: JSON-LD structured data, the speed script, and the 404 reporter.
+{%- endcomment -%}
+{%- assign rl = app.metafields.ranklift.config.value -%}
+{%- if rl -%}
+  {%- assign s = rl.schema -%}
+  {%- render 'ranklift-schema', s: s -%}
+
+  {%- if rl.speed.preconnect -%}
+    <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.shopify.com">
+  {%- endif -%}
+
+  <script>
+    window.RankLift = {
+      speed: {{ rl.speed | json }},
+      notFound: {% if template.name == '404' and rl.notFound %}true{% else %}false{% endif %},
+      proxy: "/apps/ranklift"
+    };
+  </script>
+  <script src="{{ 'ranklift.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "RankLift SEO",
+  "target": "head",
+  "settings": []
+}
+{% endschema %}

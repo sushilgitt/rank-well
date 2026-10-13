@@ -1,0 +1,58 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+# client_id and the URLs are filled in by `shopify app config link` and the
+# Coolify deploy; see README.
+
+client_id = ""
+name = "RankLift: AI SEO & Blog"
+application_url = "https://ranklift.91.239.208.85.sslip.io"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = false
+
+[access_scopes]
+# write_products  — SEO title/description, image alt text, image compression
+# write_content   — pages, blogs and articles (audit, meta, AI blog)
+# write_online_store_navigation — URL redirects (broken links, 404s)
+# read_themes     — whether the app embeds are switched on
+# write_files     — images for AI blog posts
+# read_locales + write_translations — meta and alt text in every store language
+# Keep SCOPES in the server environment identical to this list.
+scopes = "write_products,write_content,write_online_store_navigation,read_themes,write_files,read_locales,write_translations"
+
+[auth]
+redirect_urls = [
+  "https://ranklift.91.239.208.85.sslip.io/auth/callback",
+  "https://ranklift.91.239.208.85.sslip.io/auth/shopify/callback",
+  "https://ranklift.91.239.208.85.sslip.io/api/auth/callback",
+]
+
+[app_proxy]
+# Storefront URLs under /apps/ranklift/* — llms.txt, the 404 beacon, sitemap.
+url = "https://ranklift.91.239.208.85.sslip.io/proxy"
+subpath = "ranklift"
+prefix = "apps"
+
+[webhooks]
+# Must match ApiVersion in app/shopify.server.ts.
+api_version = "2026-07"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks/app/uninstalled"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/scopes_update" ]
+  uri = "/webhooks/app/scopes_update"
+
+  [[webhooks.subscriptions]]
+  # Auto meta tags / alt text for new and edited products.
+  topics = [ "products/create" ]
+  uri = "/webhooks/products"
+
+  [[webhooks.subscriptions]]
+  compliance_topics = [ "customers/data_request", "customers/redact", "shop/redact" ]
+  uri = "/webhooks/compliance"
+
+[pos]
+embedded = false
