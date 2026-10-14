@@ -1,13 +1,12 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
-# client_id and the URLs are filled in by `shopify app config link` and the
-# Coolify deploy; see README.
 
-client_id = ""
-name = "RankLift: AI SEO & Blog"
-application_url = "https://ranklift.91.239.208.85.sslip.io"
+client_id = "8697965c235205e42b7eca211086dd05"
+name = "RankLift"
+application_url = "https://ranklift.173.212.233.194.sslip.io"
 embedded = true
 
 [build]
+include_config_on_deploy = true
 automatically_update_urls_on_dev = false
 
 [access_scopes]
@@ -22,14 +21,14 @@ scopes = "write_products,write_content,write_online_store_navigation,read_themes
 
 [auth]
 redirect_urls = [
-  "https://ranklift.91.239.208.85.sslip.io/auth/callback",
-  "https://ranklift.91.239.208.85.sslip.io/auth/shopify/callback",
-  "https://ranklift.91.239.208.85.sslip.io/api/auth/callback",
+  "https://ranklift.173.212.233.194.sslip.io/auth/callback",
+  "https://ranklift.173.212.233.194.sslip.io/auth/shopify/callback",
+  "https://ranklift.173.212.233.194.sslip.io/api/auth/callback",
 ]
 
 [app_proxy]
 # Storefront URLs under /apps/ranklift/* — llms.txt, the 404 beacon, sitemap.
-url = "https://ranklift.91.239.208.85.sslip.io/proxy"
+url = "https://ranklift.173.212.233.194.sslip.io/proxy"
 subpath = "ranklift"
 prefix = "apps"
 
