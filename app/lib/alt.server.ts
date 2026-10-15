@@ -5,7 +5,7 @@ import { AI_COST } from "./plans";
 import { paginate } from "./resources.server";
 import { readSettings, type Settings } from "./settings";
 import { assertNoUserErrors, gql, type AdminGraphql } from "./shop.server";
-import { LIMITS, renderTemplate, truncate } from "./templates";
+import { LIMITS, renderTemplate, truncate, type TemplateVars } from "./templates";
 import { refund, spend } from "./usage.server";
 
 /** Product image alt text: listing, templating, AI (vision) and saving. */
@@ -18,6 +18,9 @@ export interface ProductImage {
   productType: string;
   url: string;
   alt: string | null;
+  mimeType: string | null;
+  /** Bytes of the original file, as uploaded. */
+  fileSize: number | null;
   position: number;
   /** Variant titles that show this image, e.g. "Red / M". */
   variants: string[];
@@ -29,7 +32,16 @@ export async function listProductImages(admin: AdminGraphql, opts: { limit?: num
     title: string;
     vendor: string;
     productType: string;
-    media: { nodes: { id: string; alt: string | null; mediaContentType: string; image: { url: string } | null }[] };
+    media: {
+      nodes: {
+        id: string;
+        alt: string | null;
+        mediaContentType: string;
+        image: { url: string } | null;
+        mimeType: string | null;
+        originalSource: { fileSize: number | null } | null;
+      }[];
+    };
     variants: { nodes: { title: string; media: { nodes: { id: string }[] } }[] };
   };
   const query = opts.productIds?.length ? opts.productIds.map((id) => `id:${id.split("/").pop()}`).join(" OR ") : null;
@@ -41,7 +53,9 @@ export async function listProductImages(admin: AdminGraphql, opts: { limit?: num
           products(first: 50, after: $after, query: $query) {
             nodes {
               id title vendor productType
-              media(first: 50) { nodes { id alt mediaContentType ... on MediaImage { image { url } } } }
+              media(first: 50) {
+                nodes { id alt mediaContentType ... on MediaImage { image { url } mimeType originalSource { fileSize } } }
+              }
               variants(first: 50) { nodes { title media(first: 1) { nodes { id } } } }
             }
             pageInfo { hasNextPage endCursor }
@@ -64,6 +78,8 @@ export async function listProductImages(admin: AdminGraphql, opts: { limit?: num
         productType: product.productType,
         url: media.image.url,
         alt: media.alt,
+        mimeType: media.mimeType ?? null,
+        fileSize: media.originalSource?.fileSize ?? null,
         position,
         variants: product.variants.nodes
           .filter((v) => v.title !== "Default Title" && v.media.nodes.some((m) => m.id === media.id))
@@ -87,18 +103,19 @@ export async function saveAlt(admin: AdminGraphql, items: { mediaId: string; alt
   assertNoUserErrors(data.fileUpdate.userErrors, "Alt text");
 }
 
+/** Placeholders for alt text and file name templates. */
+export function imageVars(image: ProductImage, shopName: string): TemplateVars {
+  return {
+    title: image.productTitle,
+    shop: shopName,
+    vendor: image.vendor,
+    type: image.productType,
+    variant: image.variants.length ? ` - ${image.variants[0]}` : image.position ? ` - view ${image.position + 1}` : "",
+  };
+}
+
 export function templateAlt(image: ProductImage, settings: Settings, shopName: string) {
-  return renderTemplate(
-    settings.templates.altText,
-    {
-      title: image.productTitle,
-      shop: shopName,
-      vendor: image.vendor,
-      type: image.productType,
-      variant: image.variants.length ? ` - ${image.variants[0]}` : image.position ? ` - view ${image.position + 1}` : "",
-    },
-    LIMITS.alt,
-  );
+  return renderTemplate(settings.templates.altText, imageVars(image, shopName), LIMITS.alt);
 }
 
 /** Downloads a small rendition from Shopify's CDN for the vision model. */

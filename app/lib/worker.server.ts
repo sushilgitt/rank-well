@@ -6,6 +6,8 @@ import "./audit/audit.server";
 import "./meta.server";
 import "./alt.server";
 import "./auto.server";
+import "./images.server";
+import "./speed.server";
 import { startWorker } from "./jobs.server";
 
 startWorker();

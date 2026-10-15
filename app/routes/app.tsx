@@ -34,7 +34,8 @@ export default function App() {
         <s-link href="/app">Dashboard</s-link>
         <s-link href="/app/audit">SEO audit</s-link>
         <s-link href="/app/meta">Meta tags</s-link>
-        <s-link href="/app/images">Images</s-link>
+        <s-link href="/app/images">Alt text</s-link>
+        <s-link href="/app/optimize">Image optimizer</s-link>
         <s-link href="/app/schema">Structured data</s-link>
         <s-link href="/app/links">Links &amp; redirects</s-link>
         <s-link href="/app/ai-search">AI search</s-link>

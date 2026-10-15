@@ -65,6 +65,14 @@ export type Settings = {
     lazyImages: boolean;
     preconnect: boolean;
   };
+  images: {
+    /** light ≈ visually lossless, balanced = the usual web setting, strong = smallest files. */
+    quality: "light" | "balanced" | "strong";
+    /** Longest edge in px; larger originals are scaled down. 0 = keep the size. */
+    maxSize: number;
+    /** SEO file names, same placeholders as alt text; the extension is kept. */
+    filenameTemplate: string;
+  };
   /** ISO language of AI output; "auto" = the store's primary language. */
   aiLanguage: string;
   aiTone: string;
@@ -125,6 +133,11 @@ export const DEFAULT_SETTINGS: Settings = {
     prefetch: true,
     lazyImages: true,
     preconnect: true,
+  },
+  images: {
+    quality: "balanced",
+    maxSize: 2560,
+    filenameTemplate: "{{title}}{{variant}}",
   },
   aiLanguage: "auto",
   aiTone: "clear, friendly and persuasive",

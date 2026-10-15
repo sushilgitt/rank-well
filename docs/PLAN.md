@@ -51,11 +51,13 @@ Status: [ ] todo, [~] in progress, [x] done
 - [x] Product FAQs (AI draft + editor) → FAQPage JSON-LD (pulled forward from Phase 3)
 
 ### Phase 2 — speed and images
-- [ ] Image compression (sharp → re-upload media) with **backup + restore**
-- [ ] Image file rename for SEO, WebP
+- [x] Image compression (sharp → re-upload media) with **backup + restore**
+      (originals kept in the merchant's Files as `rankwell-original-…`)
+- [x] Image file rename for SEO, WebP. Shopify ties a file's MIME type to its
+      extension, so originals keep their format; the CDN already serves WebP/AVIF
 - [x] Speed app embed: instant-click prefetch, lazy loading, preconnect,
       "Rocket" and "Turbo" levels
-- [ ] Core Web Vitals via PageSpeed Insights API, before/after report
+- [x] Core Web Vitals via PageSpeed Insights API, before/after report
 
 ### Phase 3 — content and AI blog
 - [ ] Keyword content planner (topic clusters from catalog + DataForSEO)

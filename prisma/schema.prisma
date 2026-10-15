@@ -67,6 +67,7 @@ model Shop {
   keywords  Keyword[]
   competitors Competitor[]
   visibility  VisibilityCheck[]
+  speedTests  SpeedTest[]
 }
 
 enum JobStatus {
@@ -178,23 +179,51 @@ model NotFound {
   @@index([shopId, lastSeen])
 }
 
-/// The original of every image RankLift compressed, so it can be restored.
+/// One compression of a product image. The untouched original is kept as a
+/// file in the merchant's own Shopify Files, so restore works after a redeploy
+/// or a reinstall, and the server stores no image bytes.
 model ImageBackup {
-  id          String   @id @default(cuid())
-  shopId      String
-  shop        Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
-  productId   String
-  mediaId     String
-  newMediaId  String?
-  originalUrl String
-  position    Int      @default(0)
-  alt         String?
-  bytesBefore Int
-  bytesAfter  Int?
-  status      String   @default("compressed")
-  createdAt   DateTime @default(now())
+  id           String   @id @default(cuid())
+  shopId       String
+  shop         Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  productId    String
+  mediaId      String
+  /// The Shopify file holding the original; null on a skipped row.
+  backupFileId String?
+  backupUrl    String?
+  filename     String
+  bytesBefore  Int
+  bytesAfter   Int?
+  /// compressed | restored | skipped (already optimized, nothing to gain)
+  status       String   @default("compressed")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
 
   @@index([shopId, productId])
+  @@index([shopId, mediaId, createdAt])
+}
+
+/// A PageSpeed Insights run: lab metrics from Lighthouse, field data from CrUX.
+model SpeedTest {
+  id        String   @id @default(cuid())
+  shopId    String
+  shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  url       String
+  /// home | product | collection
+  page      String
+  /// mobile | desktop
+  strategy  String
+  score     Int?
+  lcpMs     Int?
+  cls       Float?
+  tbtMs     Int?
+  fcpMs     Int?
+  siMs      Int?
+  /// Real-user p75s when Chrome has enough traffic: {lcpMs, inpMs, cls, category}.
+  field     Json?
+  createdAt DateTime @default(now())
+
+  @@index([shopId, page, strategy, createdAt])
 }
 
 model ArticleDraft {
