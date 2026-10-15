@@ -52,7 +52,7 @@ export default function Speed() {
         Save
       </s-button>
       {!d.embedOn ? (
-        <s-banner tone="warning" heading="The RankLift embed is off">
+        <s-banner tone="warning" heading="The Rank Well embed is off">
           <s-button href={d.embedUrl} target="_blank">
             Turn it on in the theme editor
           </s-button>

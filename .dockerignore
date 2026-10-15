@@ -4,6 +4,8 @@
 .react-router
 build
 node_modules
+.env
+.env.*
 extensions/*/node_modules
 extensions/*/dist
 docs

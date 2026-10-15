@@ -244,7 +244,7 @@ function NotFoundTab({ d }: { d: Data }) {
       <s-section heading="404s visitors hit">
         {d.notFound.length === 0 ? (
           <s-paragraph color="subdued">
-            None recorded yet. With the RankLift app embed on, every visit to a missing page is logged here.
+            None recorded yet. With the Rank Well app embed on, every visit to a missing page is logged here.
           </s-paragraph>
         ) : (
           <s-stack gap="base">

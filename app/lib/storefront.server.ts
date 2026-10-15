@@ -4,7 +4,7 @@
  * the merchant gives in Settings.
  */
 
-const USER_AGENT = "Mozilla/5.0 (compatible; RankLiftBot/1.0; +https://ranklift.app/bot)";
+const USER_AGENT = "Mozilla/5.0 (compatible; RankWellBot/1.0)";
 const TIMEOUT_MS = 20_000;
 
 export interface Fetched {

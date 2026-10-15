@@ -21,7 +21,7 @@ export default function App() {
   return (
     <div className={styles.index}>
       <div className={styles.content}>
-        <h1 className={styles.heading}>RankLift: AI SEO &amp; Blog</h1>
+        <h1 className={styles.heading}>Rank Well: AI SEO &amp; Blog</h1>
         <p className={styles.text}>
           Get found on Google and in AI answers: audits, meta tags, structured data, speed and AI blog posts for your
           Shopify store.

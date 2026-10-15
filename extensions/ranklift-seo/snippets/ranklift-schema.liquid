@@ -1,8 +1,9 @@
 {%- comment -%}
-  JSON-LD for the current page. `s` is the schema part of the RankLift config.
+  JSON-LD for the current page. `s` is the schema part of the Rank Well config.
   Every value goes through | json, which quotes and escapes it.
 {%- endcomment -%}
 {%- assign shop_url = shop.url -%}
+{%- assign search_query_suffix = '?q={search_term_string}' -%}
 
 {%- if s.organization and request.page_type == 'index' -%}
 <script type="application/ld+json">
@@ -31,7 +32,7 @@
     "@type": "SearchAction",
     "target": {
       "@type": "EntryPoint",
-      "urlTemplate": {{ shop_url | append: routes.search_url | append: '?q={search_term_string}' | json }}
+      "urlTemplate": {{ shop_url | append: routes.search_url | append: search_query_suffix | json }}
     },
     "query-input": "required name=search_term_string"
   }

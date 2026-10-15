@@ -1,4 +1,4 @@
-/* RankLift storefront script: link prefetching, image lazy-loading and the
+/* Rank Well storefront script: link prefetching, image lazy-loading and the
    404 reporter. Plain ES2018, no dependencies, ~2 KB. */
 (function () {
   "use strict";

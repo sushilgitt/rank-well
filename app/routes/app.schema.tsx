@@ -67,9 +67,9 @@ export default function Schema() {
       </s-button>
 
       {!d.embedOn ? (
-        <s-banner tone="warning" heading="The RankLift embed is off">
+        <s-banner tone="warning" heading="The Rank Well embed is off">
           <s-stack gap="small-200">
-            <s-paragraph>Structured data is added by the RankLift SEO app embed. Switch it on in your theme.</s-paragraph>
+            <s-paragraph>Structured data is added by the Rank Well SEO app embed. Switch it on in your theme.</s-paragraph>
             <s-button href={d.embedUrl} target="_blank">
               Open theme editor
             </s-button>
@@ -145,7 +145,7 @@ export default function Schema() {
 
       <s-section heading="Duplicate product data">
         <s-paragraph color="subdued">
-          Many themes already output basic Product data. Google reads both, and RankLift's is more complete (offers per
+          Many themes already output basic Product data. Google reads both, and Rank Well's is more complete (offers per
           variant, GTIN, review stars). If the Rich Results Test shows two Product items, remove the theme's
           "structured-data" output, or ask your theme developer.
         </s-paragraph>

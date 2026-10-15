@@ -1,11 +1,11 @@
-# RankLift — plan
+# Rank Well — plan
 
-RankLift is a from-scratch rebuild of the feature set of the SEO Master app (now
+Rank Well is a from-scratch rebuild of the feature set of the SEO Master app (now
 "SEOWILL: AI SEO & AI Blog Post", apps.shopify.com/seo-master): an SEO and GEO
 (AI-search) toolkit for Shopify stores. We copy features, never their name,
 copy, screenshots or branding.
 
-Working name "RankLift" — rename before the App Store listing.
+Brand name "Rank Well". Existing `ranklift` technical identifiers remain for installed stores.
 
 ## Stack
 

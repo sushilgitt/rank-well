@@ -70,10 +70,10 @@ export default function Dashboard() {
       </s-button>
 
       {!d.embedOn ? (
-        <s-banner tone="warning" heading="Turn on the RankLift app embed">
+        <s-banner tone="warning" heading="Turn on the Rank Well app embed">
           <s-stack gap="small-200">
             <s-paragraph>
-              Structured data, speed boosts and 404 tracking need the RankLift SEO embed switched on in your theme. It's
+              Structured data, speed boosts and 404 tracking need the Rank Well SEO embed switched on in your theme. It's
               one toggle and it's removed cleanly if you uninstall.
             </s-paragraph>
             <s-button href={d.embedUrl} target="_blank">

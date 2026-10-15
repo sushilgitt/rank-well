@@ -1,4 +1,4 @@
-# RankLift: AI SEO & Blog
+# Rank Well: AI SEO & Blog
 
 SEO and AI-search (GEO) toolkit for Shopify stores: full-site audit, meta tags,
 image alt text, structured data, llms.txt, broken links and 404 redirects,

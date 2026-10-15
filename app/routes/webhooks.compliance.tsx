@@ -5,7 +5,7 @@ import prisma from "../db.server";
 /**
  * Mandatory compliance webhooks: /webhooks/compliance
  *
- * RankLift stores no customer data — audits, links and 404 paths are about the
+ * Rank Well stores no customer data — audits, links and 404 paths are about the
  * store's pages — so customers/data_request and customers/redact have nothing
  * to return or delete. shop/redact removes everything the shop owns.
  *
