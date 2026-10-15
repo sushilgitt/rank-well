@@ -32,9 +32,8 @@ function features(plan: Plan): string[] {
     ...(p.features.jsonLd ? ["Product, Article, FAQ & Local business JSON-LD"] : ["Organization, Website & Breadcrumb JSON-LD"]),
     ...(p.features.llmsTxt ? ["llms.txt for AI search"] : []),
     ...(p.features.autoRedirect ? ["Automatic 404 redirects"] : ["Broken link & 404 monitor"]),
-    ...(p.features.rankTracking ? [`Rank tracking: ${p.features.rankTracking} keywords`] : []),
-    ...(p.features.competitors ? ["Competitor SEO & GEO analysis"] : []),
-    ...(p.features.internalLinks ? ["AI internal linking"] : []),
+    // Rank tracking, competitor analysis and internal linking are listed here
+    // once they ship: App Store review rejects plans that promise unbuilt features.
   ];
 }
 

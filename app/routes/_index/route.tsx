@@ -1,10 +1,12 @@
 import type { LoaderFunctionArgs } from "react-router";
-import { redirect, Form, useLoaderData } from "react-router";
-
-import { login } from "../../shopify.server";
+import { redirect } from "react-router";
 
 import styles from "./styles.module.css";
 
+/**
+ * Public landing page. Installs start from the Shopify App Store or admin,
+ * never from a shop-domain form here (App Store requirement 2.3.1).
+ */
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
 
@@ -12,32 +14,18 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     throw redirect(`/app?${url.searchParams.toString()}`);
   }
 
-  return { showForm: Boolean(login) };
+  return null;
 };
 
 export default function App() {
-  const { showForm } = useLoaderData<typeof loader>();
-
   return (
     <div className={styles.index}>
       <div className={styles.content}>
-        <h1 className={styles.heading}>Rank Well: AI SEO &amp; Blog</h1>
+        <h1 className={styles.heading}>Rank Well: AI SEO</h1>
         <p className={styles.text}>
-          Get found on Google and in AI answers: audits, meta tags, structured data, speed and AI blog posts for your
-          Shopify store.
+          Get found on Google and in AI answers: audits, meta tags, structured data, image optimization and speed for your
+          Shopify store. Install Rank Well from the Shopify App Store, then open it from your Shopify admin.
         </p>
-        {showForm && (
-          <Form className={styles.form} method="post" action="/auth/login">
-            <label className={styles.label}>
-              <span>Shop domain</span>
-              <input className={styles.input} type="text" name="shop" />
-              <span>e.g: my-shop-domain.myshopify.com</span>
-            </label>
-            <button className={styles.button} type="submit">
-              Log in
-            </button>
-          </Form>
-        )}
         <ul className={styles.list}>
           <li>
             <strong>Full-site SEO &amp; GEO audit</strong>. Checks every page the way search engines and AI crawlers see it.
